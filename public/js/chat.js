@@ -1,7 +1,9 @@
 const socketio = io();
-socketio.on('countUpdated', (count) => {
-    console.log('Vestlejate arv on uuendatud', count);
+socketio.on('message', (message) => {
+    console.log(message);
 });
-document.querySelector('#counterUpdated').addEventListener('click', () => {
-    console.log('Vajutatud')
+document.querySelector('#msg').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const msg = e.target.elements.message.value
+    socketio.emit('sendMsg', msg);
 });

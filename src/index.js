@@ -8,10 +8,16 @@ const io = socketio(server);
 const port = process.env.PORT || 3000;
 const publicDirectory = path.join(__dirname, '../public');
 chat.use(express.static(publicDirectory));
-let count = 0;
 io.on('connection', (socket) => {
     console.log('Uus klient..');
-    socket.emit('countUpdated', count);
+    socket.emit('message', 'Tere!');
+    socket.broadcast.emit('message', 'Uus kasutaja liitus!');
+    socket.on('sendMsg', (msg) => {
+        io.emit('message', msg);
+    });
+    socket.on('disconnect', () => {
+        io.emit('message', 'Kasutaja lahkus vestlusest!');
+    });
 });
 server.listen(port, () => {
     console.log(`Server jookseb port ${port} peal`);
