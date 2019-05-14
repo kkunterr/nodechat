@@ -15,6 +15,9 @@ io.on('connection', (socket) => {
     socket.on('sendMsg', (msg) => {
         io.emit('message', msg);
     });
+    socket.on('sendLocation', (position) => {
+        io.emit('message', `https://google.com/maps?q=${position.latitude},${position.longitude}`);
+    });
     socket.on('disconnect', () => {
         io.emit('message', 'Kasutaja lahkus vestlusest!');
     });
