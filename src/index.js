@@ -1,5 +1,5 @@
 const path = require('path');
-const expresss = require('express');
+const express = require('express');
 const chat = express();
 const port = process.env.PORT || 3000;
 const publicDirectory = path.join(__dirname, '../public');
