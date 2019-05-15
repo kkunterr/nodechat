@@ -6,17 +6,19 @@ const $locationSend = document.querySelector('#location');
 const $messages = document.querySelector('#messages');
 const messageTemplate = document.querySelector('#message-template').innerHTML;
 const locationTemplate = document.querySelector('#location-template').innerHTML;
+
+const { kasutajanimi, jututuba } = Qs.parse(location.search, { ignoreQueryPrefix: true });
 socketio.on('locationMessage', (location) => {
     const html = Mustache.render(locationTemplate, {
-        location
+        location: location.url,
+        createdAt: moment(location.createdAt).format('HH:mm')
     });
     $messages.insertAdjacentHTML('beforeend', html);
 });
-
 socketio.on('message', (message) => {
-    console.log(message);
     const html = Mustache.render(messageTemplate, {
-        message
+        message: message.text,
+        createdAt: moment(message.createdAt).format('HH:mm')
     });
     $messages.insertAdjacentHTML('beforeend', html);
 });
@@ -28,7 +30,6 @@ $messageForm.addEventListener('submit', (e) => {
         $messageFormButton.removeAttribute('disabled');
         $messageFormInput.value = '';
         $messageFormInput.focus();
-        console.log(callback);
     });
 });
 $locationSend.addEventListener('click', () => {
@@ -41,10 +42,15 @@ $locationSend.addEventListener('click', () => {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude
         }, () => {
-            console.log('Asukoht saadetud');
             $locationSend.removeAttribute('disabled');
         });
     });
+});
+socketio.emit('join', { kasutajanimi, jututuba }, (error) => {
+    if(error) {
+        alert(error)
+        location.href = '/'
+    }
 });
 
 

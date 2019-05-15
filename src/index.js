@@ -5,23 +5,42 @@ const express = require('express');
 const chat = express();
 const server = http.createServer(chat);
 const io = socketio(server);
+const { addUser, removeUser, getUser, getUsersInRoom } = require('./utils/users');
+const { generateMessages, generateLocationMessage } = require('./utils/messages');
 const port = process.env.PORT || 3000;
 const publicDirectory = path.join(__dirname, '../public');
 chat.use(express.static(publicDirectory));
 io.on('connection', (socket) => {
-    console.log('Uus klient..');
-    socket.emit('message', 'Tere!');
-    socket.broadcast.emit('message', 'Kasutaja liitus vestlusega!');
+    socket.on('join', (options, callback) => {
+        const { error, user } = addUser({ id: socket.id, ...options });
+        if(error) {
+           return callback(error);
+        }
+        socket.join(user.jututuba);
+
+        socket.emit('message', generateMessages('Tere tulemast Jututuppa!'));
+        socket.broadcast.to(user.jututuba).emit('message', generateMessages(`Teade: ${user.kasutajanimi} liitus jututoaga`));
+
+        callback()
+    });
     socket.on('sendMsg', (msg, callback) => {
-        io.emit('message', msg)
-        callback('Saadetud');
+        const user = getUser(socket.id)
+
+        io.to(user.jututuba).emit('message', generateMessages(msg))
+        callback();
     });
     socket.on('sendLocation', (position, callback) => {
-        io.emit('locationMessage', `https://google.com/maps?q=${position.latitude},${position.longitude}`);
+        const user = getUser(socket.id)
+        io.to(user.jututuba).emit('locationMessage', generateLocationMessage(`https://google.com/maps?q=${position.latitude},${position.longitude}`));
         callback();
     });
     socket.on('disconnect', () => {
-        io.emit('message', 'Kasutaja lahkus vestlusest!');
+      const user = removeUser(socket.id)
+
+        if(user) {
+            io.to(user.jututuba).emit('message', generateMessages(`Teade: ${user.kasutajanimi} lahkus jututoast`))
+        }
+
     });
 });
 server.listen(port, () => {
