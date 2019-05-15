@@ -18,27 +18,27 @@ io.on('connection', (socket) => {
         }
         socket.join(user.jututuba);
 
-        socket.emit('message', generateMessages('Tere tulemast Jututuppa!'));
-        socket.broadcast.to(user.jututuba).emit('message', generateMessages(`Teade: ${user.kasutajanimi} liitus jututoaga`));
+        socket.emit('message', generateMessages('Admin','Tere tulemast Jututuppa!'));
+        socket.broadcast.to(user.jututuba).emit('message', generateMessages('Admin', `Teade: ${user.kasutajanimi} liitus jututoaga`));
 
         callback()
     });
     socket.on('sendMsg', (msg, callback) => {
         const user = getUser(socket.id)
 
-        io.to(user.jututuba).emit('message', generateMessages(msg))
+        io.to(user.jututuba).emit('message', generateMessages(user.kasutajanimi, msg))
         callback();
     });
     socket.on('sendLocation', (position, callback) => {
         const user = getUser(socket.id)
-        io.to(user.jututuba).emit('locationMessage', generateLocationMessage(`https://google.com/maps?q=${position.latitude},${position.longitude}`));
+        io.to(user.jututuba).emit('locationMessage', generateLocationMessage(user.kasutajanimi, `https://google.com/maps?q=${position.latitude},${position.longitude}`));
         callback();
     });
     socket.on('disconnect', () => {
       const user = removeUser(socket.id)
 
         if(user) {
-            io.to(user.jututuba).emit('message', generateMessages(`Teade: ${user.kasutajanimi} lahkus jututoast`))
+            io.to(user.jututuba).emit('message', generateMessages('Admin', `Teade: ${user.kasutajanimi} lahkus jututoast`))
         }
 
     });

@@ -20,7 +20,7 @@
                 <div id="messages" class="chat__messages"></div>
                 <div class="compose">
                         <form id="msg" autocomplete="off">
-                            <input name="message" placeholder="Sõnum">
+                            <input name="message" placeholder="Sõnum" required autocomplete="off">
                             <button>Saada</button>
                         </form>
                         <button id="location">Saada asukoht</button>
@@ -31,7 +31,7 @@
     <script id="message-template" type="text/html">
     <div class="message">
         <p>
-            <span class="message__name">Kasutajanimi</span>
+            <span class="message__name">{{kasutajanimi}}</span>
             <span class="message__meta">{{createdAt}}</span>
         </p>
         <p>{{message}}</p>
@@ -40,7 +40,7 @@
     <script id="location-template" type="text/html">
         <div class="">
             <p>
-                <span class="message__name">Kasutajanimi</span>
+                <span class="message__name">{{kasutajanimi}}</span>
                 <span class="message__meta">{{createdAt}}</span>
             </p>
             <p><a href="{{location}}" target="_blank">Minu asukoht</a></p>

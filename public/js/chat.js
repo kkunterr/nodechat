@@ -10,6 +10,7 @@ const locationTemplate = document.querySelector('#location-template').innerHTML;
 const { kasutajanimi, jututuba } = Qs.parse(location.search, { ignoreQueryPrefix: true });
 socketio.on('locationMessage', (location) => {
     const html = Mustache.render(locationTemplate, {
+        kasutajanimi: location.kasutajanimi,
         location: location.url,
         createdAt: moment(location.createdAt).format('HH:mm')
     });
@@ -17,6 +18,7 @@ socketio.on('locationMessage', (location) => {
 });
 socketio.on('message', (message) => {
     const html = Mustache.render(messageTemplate, {
+        kasutajanimi: message.kasutajanimi,
         message: message.text,
         createdAt: moment(message.createdAt).format('HH:mm')
     });
