@@ -12,11 +12,13 @@ io.on('connection', (socket) => {
     console.log('Uus klient..');
     socket.emit('message', 'Tere!');
     socket.broadcast.emit('message', 'Kasutaja liitus vestlusega!');
-    socket.on('sendMsg', (msg) => {
-        io.emit('message', msg);
+    socket.on('sendMsg', (msg, callback) => {
+        io.emit('message', msg)
+        callback('Saadetud');
     });
-    socket.on('sendLocation', (position) => {
-        io.emit('message', `https://google.com/maps?q=${position.latitude},${position.longitude}`);
+    socket.on('sendLocation', (position, callback) => {
+        io.emit('locationMessage', `https://google.com/maps?q=${position.latitude},${position.longitude}`);
+        callback();
     });
     socket.on('disconnect', () => {
         io.emit('message', 'Kasutaja lahkus vestlusest!');
